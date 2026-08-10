@@ -1,0 +1,9 @@
+---
+- name: Configure all servers
+  hosts: devops_servers
+  become: true
+
+  roles:
+    - common
+    - docker
+    - app

@@ -1,0 +1,7 @@
+---
+docker_packages:
+  - docker
+  - docker-cli
+  - containerd
+  - runc
+  - docker-compose

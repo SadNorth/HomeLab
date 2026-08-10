@@ -1,0 +1,16 @@
+---
+- name: Update all packages
+  dnf:
+    name: "*"
+    state: latest
+
+- name: Install basic tools
+  dnf:
+    name: "{{ common_packages }}"
+    state: present
+
+- name: Enable qemu guest agent
+  systemd:
+    name: qemu-guest-agent
+    enabled: true
+    state: started

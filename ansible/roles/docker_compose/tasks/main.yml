@@ -1,0 +1,16 @@
+---
+- name: Create project directory
+  file:
+    path: "{{ project_directory }}"
+    state: directory
+    owner: devops
+    group: devops
+    mode: "0755"
+
+- name: Copy docker compose file
+  template:
+    src: compose.yaml.j2
+    dest: "{{ project_directory }}/compose.yaml"
+    owner: devops
+    group: devops
+    mode: "0644"

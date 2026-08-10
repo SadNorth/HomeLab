@@ -1,0 +1,6 @@
+---
+project_directory: /opt/devops-platform
+
+dockerhub_image: sadnorth/devops-platform:latest
+
+backend_port: 80

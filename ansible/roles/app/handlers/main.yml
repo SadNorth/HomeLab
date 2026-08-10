@@ -1,0 +1,23 @@
+---
+
+- name: Build application stack
+  community.docker.docker_compose_v2:
+    project_src: "{{ app_directory }}"
+    state: present
+    pull: always
+  notify: 
+    - Run Alembic migrations
+
+- name: Restart application stack
+  community.docker.docker_compose_v2:
+    project_src: "{{ app_directory }}"
+    state: restarted
+  notify: 
+    - Run Alembic migrations  
+
+- name: Run Alembic migrations
+  ansible.builtin.command:
+    cmd: docker compose exec -T backend alembic upgrade head
+    chdir: "{{ app_directory }}"
+  register: alembic_result
+  changed_when: "'Running upgrade' in alembic_result.stdout"

@@ -1,0 +1,17 @@
+---
+- name: Install Docker
+  dnf:
+    name: "{{ docker_packages }}"
+    state: present
+
+- name: Enable Docker service
+  systemd:
+    name: docker
+    enabled: true
+    state: started
+
+- name: Add devops user to docker group
+  user:
+    name: devops
+    groups: docker
+    append: true

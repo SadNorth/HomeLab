@@ -1,0 +1,82 @@
+---
+- name: Create application directory
+  ansible.builtin.file:
+    path: "{{ app_directory }}"
+    state: directory
+    owner: "{{ app_user }}"
+    group: "{{ app_user }}"
+    mode: "0755"
+
+- name: Clone application repository
+  ansible.builtin.git:
+    repo: "{{ app_repository }}"
+    dest: "{{ app_directory }}"
+    version: "{{ app_branch }}"
+    update: true
+  become: true
+  become_user: "{{ app_user }}"
+  notify:
+    - Build application stack
+
+- name: Show current commit
+  ansible.builtin.command:
+    cmd: git rev-parse --short HEAD
+    chdir: "{{ app_directory }}"
+  register: git_commit
+  changed_when: false
+
+- name: Display deployed version
+  ansible.builtin.debug:
+    msg: "Deployed commit {{ git_commit.stdout }}"
+
+- name: Create compose environment file
+  ansible.builtin.template:
+    src: compose.env.j2
+    dest: "{{ app_directory }}/.env"
+    owner: "{{ app_user }}"
+    group: "{{ app_user }}"
+    mode: "0600"
+  notify: 
+    - Restart application stack
+
+- name: Create backend environment file
+  ansible.builtin.template:
+    src: backend.env.j2
+    dest: "{{ app_directory }}/backend/.env"
+    owner: "{{ app_user }}"
+    group: "{{ app_user }}"
+    mode: "0600"
+  notify:
+    - Restart application stack
+
+- name: Start application stack
+  community.docker.docker_compose_v2:
+    project_src: "{{ app_directory }}"
+    state: present
+
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers
+
+- name: Wait for backend container
+  ansible.builtin.command:
+    cmd: > 
+      docker inspect
+      --format='{{ "{{.State.Health.Status}}" }}'
+      backend
+  register: backend_status
+  retries: 10
+  delay: 5
+  until: 
+    - backend_status.rc == 0
+    - backend_status.stdout.strip() == "healthy"
+  failed_when: false
+  changed_when: false
+
+- name: Wait until API in available
+  ansible.builtin.uri:
+    url: http://localhost/health
+    status_code: 200
+  register: api_health
+  retries: 20
+  delay: 3
+  until: api_health.status == 200

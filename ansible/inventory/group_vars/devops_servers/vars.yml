@@ -1,0 +1,4 @@
+app_directory: /opt/devops-platform
+compose_file: compose.yaml
+
+image_tag: latest

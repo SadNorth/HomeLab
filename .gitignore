@@ -1,0 +1,87 @@
+# =========================
+# Ansible
+# =========================
+
+*.retry
+.ansible/
+ansible/.ansible/
+
+# Ansible Vault password
+vault_pass
+.vault_pass
+vault-password-file
+
+# =========================
+# Terraform
+# =========================
+
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+*.tfplan
+*.tfplan.json
+
+# =========================
+# Python
+# =========================
+
+__pycache__/
+*.py[cod]
+*.so
+.venv/
+venv/
+env/
+ENV/
+
+# =========================
+# Logs
+# =========================
+
+*.log
+logs/
+
+# =========================
+# Docker
+# =========================
+
+*.tar
+*.tar.gz
+
+# =========================
+# IDE
+# =========================
+
+.vscode/
+.idea/
+
+# =========================
+# OS
+# =========================
+
+.DS_Store
+Thumbs.db
+
+# =========================
+# Temporary files
+# =========================
+
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# =========================
+# VM / disk images
+# =========================
+
+*.iso
+*.img
+*.qcow
+*.qcow2
+*.vmdk
+*.vdi
+*.vhd
+*.vhdx

@@ -1,0 +1,8 @@
+---
+app_directory: /opt/devops-platform
+
+app_repository: git@github.com:sadnorth/devops-platform.git
+
+app_branch: main
+
+app_user: devops

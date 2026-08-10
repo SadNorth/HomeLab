@@ -1,0 +1,9 @@
+---
+common_packages:
+  - vim
+  - git
+  - curl
+  - wget
+  - htop
+  - unzip
+  - qemu-guest-agent

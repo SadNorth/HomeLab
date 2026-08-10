@@ -1,0 +1,17 @@
+#cloud-config
+
+hostname: devops-server
+
+users:
+    - default
+
+    - name: devops
+      groups:
+        - wheel
+      shell: /bin/bash
+      sudo: ALL=(ALL) NOPASSWD:ALL
+
+      ssh_authorized_keys:
+        - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGyTnAq0rnn172MZK408SI3ihApnsQ7mJ1ubYN1IblwP devops-homelab
+
+ssh_pwauth: false
