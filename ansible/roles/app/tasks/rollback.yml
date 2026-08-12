@@ -1,0 +1,53 @@
+---
+- name: Set rollback image tag
+  ansible.builtin.set_fact:
+    image_tag: "{{ rollback_image_tag }}"
+
+- name: Create compose environment file
+  ansible.builtin.template:
+    src: compose.env.j2
+    dest: "{{ app_directory }}/.env"
+    owner: "{{ app_user }}"
+    group: "{{ app_user }}"
+    mode: "0600"
+
+- name: Pull rollback image
+  community.docker.docker_compose_v2:
+    project_src: "{{ app_directory }}"
+    pull: always
+    services:
+      - backend
+
+- name: Start rollback stack
+  community.docker.docker_compose_v2:
+    project_src: "{{ app_directory }}"
+    state: present
+    services:
+      - backend
+
+- name: Wait for backend container
+  ansible.builtin.command:
+    cmd: >
+      docker inspect
+      --format='{{ "{{.State.Health.Status}}" }}'
+      backend
+    register: backend_status
+    retries: 10
+    delay: 5
+    until:
+      - backend_status.rc == 0
+      - backend_status.stdout.strip() == "healthy"
+    changed_when: false
+
+- name: Wait until API is available
+  ansible.builtin.uri:
+    url: http://localhost/health
+    status_code: 200
+  register: api_health
+  retries: 20
+  delay: 3
+  until: api_health.status == 200
+
+- name: Display rollback version
+  ansible.builtin.debug:
+    msg: "Rolled back to {{ image_tag }}"

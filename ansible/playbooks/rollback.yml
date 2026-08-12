@@ -1,0 +1,10 @@
+---
+- name: Rollback application
+  hosts: devops_servers
+  become: true
+
+  vars:
+    rollback_image_tag: "{{ image_tag }}"
+
+  roles:
+    - role: app
